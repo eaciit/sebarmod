@@ -3,6 +3,7 @@ package sebarmod
 import (
     "github.com/eaciit/toolkit"
     "net/rpc"
+    "errors"
 )
 
 type sebarFn struct {
@@ -32,10 +33,10 @@ func (s *Server) Start() error {
 func (s *Server) Stop()error{
     for id := range s.nodes{
         if c:=s.client(id); c!=nil {
-            estop := c.Call("stop", nil, nil)
-            if estop!=nil {
-                return estop
-            }    
+            rstop := c.Call("stop", nil)
+            if rstop.Status!=toolkit.Status_NOK{
+                return errors.New(rstop.Message)
+            }
         }
     }
     return nil
@@ -109,7 +110,7 @@ func (s *Server) client(id string) *Client{
         return nil
     }
     if !c.IsConnected(){
-        econnect := c.Connect(n.Host)
+        econnect := c.Connect()
         if econnect!=nil {
             return nil
         }
@@ -132,9 +133,9 @@ func (s *Server) broadcast(broadcastto BroadcastTo, nodeids []string, name strin
     for id, _ := range s.nodes{
         c := s.client(id)
         if c!=nil {
-            e := c.Call(name, nil, nil)
-            if e!=nil {
-                //-- handle error
+            result := c.Call(name, nil)
+            if result.Status!=toolkit.Status_OK{
+                
             }
          }
     }
