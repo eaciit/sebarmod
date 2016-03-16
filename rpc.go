@@ -74,7 +74,7 @@ func (r *RPC) Do(in toolkit.M, out *toolkit.Result) error {
 }
 
 /*AddFn add a function to server */
-func addFn(r *RPC, svr *Server, k string, fn RPCFn, config toolkit.M) {
+func addFnToRPC(r *RPC, svr *Server, k string, fn RPCFn, config toolkit.M) {
 	//func (r *RPC) AddFn(k string, fn RPCFn) {
 	//if r.Server == nil {
 	svr.Log.Info("Register " + svr.Host + "/" + k)

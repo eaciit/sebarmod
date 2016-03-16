@@ -49,6 +49,6 @@ func (a *Server) AddFn(methodname string, fn RPCFn) {
 	} else {
 		r = a.rpcObject
 	}
-	AddFntoRPC(r, a, methodname, fn)
+	addFnToRPC(r, a, methodname, fn, nil)
 	a.rpcObject = r
 }
