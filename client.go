@@ -51,7 +51,7 @@ func (c *Client) Connect() error {
 /*Call call fn on server*/
 func (c *Client) Call(name string, data toolkit.M) *toolkit.Result {
 	ret := toolkit.NewResult()
-    return ret.SetErrorTxt("mod.Client.Call: no returned data")
+    return ret.SetErrorTxt("mod.Client.Call: no data is being returned")
 }
 
 /*IsConnected Check if client is connected */
