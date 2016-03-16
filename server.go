@@ -1,5 +1,10 @@
 package sebarmod
 
+import (
+    "github.com/eaciit/toolkit"
+    "net/rpc"
+)
+
 type sebarFn struct {
 	fn func()
     
@@ -9,7 +14,10 @@ type sebarFn struct {
 /*Server SebarMod server */
 type Server struct {
     Host string
+    Log *toolkit.LogEngine
     
+    rpcObject *RPC
+	rpcServer *rpc.Server
 	fns   map[string]*sebarFn
 	nodes map[string]*Server
     clients map[string]*Client
@@ -22,7 +30,7 @@ func (s *Server) Start() error {
 
 /*Stop stop the server*/
 func (s *Server) Stop()error{
-    for id, _ := range s.nodes{
+    for id := range s.nodes{
         if c:=s.client(id); c!=nil {
             estop := c.Call("stop", nil, nil)
             if estop!=nil {

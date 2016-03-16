@@ -1,7 +1,9 @@
 package tests
 
 import (
+    "github.com/eaciit/toolkit"
     "github.com/eaciit/sebarmod"
+    "time"
     "testing"
 )
 
@@ -9,6 +11,22 @@ var (
     e error
     svr *sebarmod.Server
 )
+
+type ModObj struct{
+    Created time.Time
+    Value int
+}
+
+func newModObj(x int) *ModObj{
+    return &ModObj{time.Now(), x}
+}
+
+type ModApp struct{    
+}
+
+func (m *ModApp) Hello(name string) string{
+    return toolkit.Sprintf("Hello %s", name)
+}
 
 func skipIfNil(t *testing.T){
     if svr==nil {
@@ -24,10 +42,10 @@ func check(pre string, e error, t *testing.T){
 
 func TestServer(t *testing.T){
     svr = sebarmod.NewServer("localhost:5000")
+    e = svr.Register(new(ModApp))
+    check("Register ModApp", e, t)
     e = svr.Verify()
-    if e!=nil {
-        t.Fatal("Error start server:", e.Error())
-    }
+    check("Start Server", e, t)
 }
 
 func TestStart(t *testing.T){
