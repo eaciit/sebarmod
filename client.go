@@ -66,7 +66,7 @@ func (c *Client) Call(methodName string, in toolkit.M) *toolkit.Result {
 	}
 	out := toolkit.NewResult()
 	in["method"] = methodName
-	e := c.rpcclient.Call("Rpc.Do", in, out)
+	e := c.rpcclient.Call("RPC.Do", in, out)
 	if e != nil {
 		return out.SetErrorTxt(c.Host + "." + methodName + " Fail: " + e.Error())
 	}

@@ -2,8 +2,10 @@ package sebarmod
 
 import (
     "github.com/eaciit/toolkit"
+    "net"
     "net/rpc"
     "errors"
+    "strings"
 )
 
 type sebarFn struct {
@@ -19,6 +21,7 @@ type Server struct {
     
     rpcObject *RPC
 	rpcServer *rpc.Server
+    listener net.Listener
 	fns   map[string]*sebarFn
 	nodes map[string]*Server
     clients map[string]*Client
@@ -30,7 +33,46 @@ func (s *Server) Start() error {
     if everify!=nil {
         return everify
     }
-	return errors.New("Not yet applicable")
+    
+    if s.Log == nil {
+		le, e := toolkit.NewLog(true, false, "", "", "")
+		if e == nil {
+			s.Log = le
+		} else {
+			return errors.New("Unable to setup log")
+		}
+	}
+
+	if s.rpcObject == nil {
+		s.rpcObject = new(RPC)
+	}
+	
+	s.AddFn("ping", func(in toolkit.M) *toolkit.Result {
+		result := toolkit.NewResult()
+		result.Data = "Application Server powered by SebarMod"
+		return result
+	})
+
+	s.Log.Info("Starting server " + s.Host + ". Registered functions are: " + strings.Join(func() []string {
+		ret := []string{}
+		for k := range s.rpcObject.Fns {
+			ret = append(ret, k)
+		}
+		return ret
+	}(), ", "))
+
+	s.rpcServer = rpc.NewServer()
+	s.rpcServer.Register(s.rpcObject)
+	l, e := net.Listen("tcp", toolkit.Sprintf("%s", s.Host))
+	if e != nil {
+		return e
+	}
+
+	s.listener = l
+	go func() {
+		s.rpcServer.Accept(l)
+	}()
+	return nil
 }
 
 /*Stop stop the server*/
