@@ -26,7 +26,11 @@ type Server struct {
 
 /*Start start the server*/
 func (s *Server) Start() error {
-	return nil
+    everify := s.Verify()
+    if everify!=nil {
+        return everify
+    }
+	return errors.New("Not yet applicable")
 }
 
 /*Stop stop the server*/
