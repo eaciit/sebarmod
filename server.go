@@ -79,7 +79,7 @@ func (s *Server) Start() error {
 func (s *Server) Stop()error{
     for id := range s.nodes{
         if c:=s.client(id); c!=nil {
-            rstop := c.Call("stop", nil)
+            rstop := c.CallResult("stop", nil)
             if rstop.Status!=toolkit.Status_NOK{
                 return errors.New(rstop.Message)
             }
@@ -179,7 +179,7 @@ func (s *Server) broadcast(broadcastto BroadcastTo, nodeids []string, name strin
     for id, _ := range s.nodes{
         c := s.client(id)
         if c!=nil {
-            result := c.Call(name, nil)
+            result := c.CallResult(name, nil)
             if result.Status!=toolkit.Status_OK{
                 
             }

@@ -56,8 +56,8 @@ func (c *Client) Connect() error {
 	return nil
 }
 
-/*Call call fn on server*/
-func (c *Client) Call(methodName string, in toolkit.M) *toolkit.Result {
+/*CallResult call fn on server and return its value as into toolkit.Result*/
+func (c *Client) CallResult(methodName string, in toolkit.M) *toolkit.Result {
 	if c.rpcclient == nil {
 		return toolkit.NewResult().SetErrorTxt(toolkit.Sprintf("Unable to call %s.%s, no connection handshake", c.Host, methodName))
 	}
@@ -71,6 +71,29 @@ func (c *Client) Call(methodName string, in toolkit.M) *toolkit.Result {
 		return out.SetErrorTxt(c.Host + "." + methodName + " Fail: " + e.Error())
 	}
 	return out
+}
+
+/*Call call a function and return its result into a pointer object*/
+func (c *Client) Call(methodname string, in toolkit.M, out interface{}) error{
+    r := c.CallResult(methodname, in)
+    if r.Status!=toolkit.Status_OK{
+        return errors.New("client.CallTo: " + r.Message)
+    }
+    
+    var e error
+    if !r.IsEncoded() {
+        e = r.Cast(out, r.EncoderID)
+        if e!=nil {
+            return errors.New("client.CallTo: Cast Fail " + e.Error())
+        }
+    }
+    
+    e = r.GetFromBytes(out)
+    if e!=nil{
+        return errors.New("client.CallTo: Decode bytes fail " + e.Error())
+    }
+    
+    return nil
 }
 
 /*IsConnected Check if client is connected */

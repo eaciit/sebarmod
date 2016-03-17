@@ -4,7 +4,6 @@ import (
     "github.com/eaciit/toolkit"
     "github.com/eaciit/sebarmod"
     "time"
-    "errors"
     "testing"
 )
 
@@ -65,16 +64,9 @@ func TestCall(t *testing.T){
     e = client.Connect()
     check("CallConnect", e, t)
 
-var result *toolkit.Result
-    result = client.Call("hello",toolkit.M{}.Set("name","Arief Darmawan"))
-    if result.Status!=toolkit.Status_OK{
-        check("Call", errors.New(result.Message), t)
-    }
-    
-    var returned *ModObj
-    if e=result.GetFromBytes(&returned); e!=nil {
-        check("DecodeReturn", e, t)
-    }
+    returned := new(ModObj)
+    e = client.Call("hello",toolkit.M{}.Set("name","Arief Darmawan"), returned)
+    check("Call", e, t)
     toolkit.Println("Value returned:\n", toolkit.JsonStringIndent(returned,"\t"))
 }
 
