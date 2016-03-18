@@ -56,6 +56,13 @@ func (c *Client) Connect() error {
 	return nil
 }
 
+/*Close close connection*/
+func (c *Client) Close(){
+    if c.rpcclient!=nil {
+        c.rpcclient.Close()
+    }
+}
+
 /*CallResult call fn on server and return its value as into toolkit.Result*/
 func (c *Client) CallResult(methodName string, in toolkit.M) *toolkit.Result {
 	if c.rpcclient == nil {
@@ -86,6 +93,7 @@ func (c *Client) Call(methodname string, in toolkit.M, out interface{}) error{
         if e!=nil {
             return errors.New("client.CallTo: Cast Fail " + e.Error())
         }
+        return nil
     }
     
     e = r.GetFromBytes(out)

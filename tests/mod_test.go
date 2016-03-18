@@ -59,11 +59,18 @@ func TestStart(t *testing.T){
 
 var client *sebarmod.Client
 
-func TestCall(t *testing.T){
+func TestPing(t *testing.T){
     client = sebarmod.NewClient("localhost:5000", nil)
     e = client.Connect()
     check("CallConnect", e, t)
 
+    returned := ""
+    e = client.Call("ping",nil,&returned)
+    check("Call", e, t)
+    toolkit.Println("Value returned:\n", toolkit.JsonStringIndent(returned,"\t"))
+}
+
+func TestCall(t *testing.T){
     returned := new(ModObj)
     e = client.Call("hello",toolkit.M{}.Set("name","Arief Darmawan"), returned)
     check("Call", e, t)
@@ -73,5 +80,6 @@ func TestCall(t *testing.T){
 func TestClose(t *testing.T){
     skipIfNil(t)
     e = svr.Stop()
+    client.Close()
     check("Stop", e, t)
 }
