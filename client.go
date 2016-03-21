@@ -87,6 +87,10 @@ func (c *Client) Call(methodname string, in toolkit.M, out interface{}) error{
         return errors.New("client.CallTo: " + r.Message)
     }
     
+    if out==nil{
+        return nil
+    }
+    
     var e error
     if !r.IsEncoded() {
         e = r.Cast(out, r.EncoderID)

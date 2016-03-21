@@ -72,14 +72,37 @@ func TestPing(t *testing.T){
 
 func TestCall(t *testing.T){
     returned := new(ModObj)
-    e = client.Call("hello",toolkit.M{}.Set("name","Arief Darmawan"), returned)
+    e = client.Call("hello",toolkit.M{}.Set("name","Arief Darmawan Soebani"), returned)
     check("Call", e, t)
     toolkit.Println("Value returned:\n", toolkit.JsonStringIndent(returned,"\t"))
+}
+
+var nodes []*sebarmod.Server
+func TestNode(t *testing.T){
+    for i:=0;i<5;i++{
+        port := 5001+i
+        host := toolkit.Sprintf("localhost:%d",port)
+        snode := sebarmod.NewServer(host)
+        snode.Register(new(ModApp))
+        snode.Start()
+        efollow := snode.SetMaster("localhost:5000", nil)
+        if efollow!=nil {
+            t.Fatalf("Fail to follow master on node %s: %s", host, efollow.Error())
+        }
+        nodes = append(nodes, snode)
+    }
 }
 
 func TestClose(t *testing.T){
     skipIfNil(t)
     e = svr.Stop()
-    client.Close()
     check("Stop", e, t)
+    
+    /*
+    for _, node := range nodes{
+        node.Stop()
+    }
+    */
+    
+    client.Close()
 }
